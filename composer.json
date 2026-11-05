@@ -1,0 +1,11 @@
+
+{
+    "name": "iutnc/touiteur",
+    "description": "SAE S3 - Application Touiteur",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "iutnc\\touiteur\\": "src/classes/"
+        }
+    }
+}
