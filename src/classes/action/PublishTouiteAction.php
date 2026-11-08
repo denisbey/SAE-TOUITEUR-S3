@@ -4,6 +4,8 @@ namespace iutnc\touiteur\action;
 
 class PublishTouiteAction extends Action
 {
+    private const LONGUEUR_MAX = 235;
+
     public function execute(): string
     {
         if ($this->http_method === 'GET') {
@@ -19,6 +21,9 @@ class PublishTouiteAction extends Action
         }
         if ($texte === '') {
             $erreurs[] = "Le texte du touite est obligatoire.";
+        } elseif (strlen($texte) > self::LONGUEUR_MAX) {
+            $erreurs[] = "Le touite ne doit pas dépasser " . self::LONGUEUR_MAX
+                . " caractères (vous en avez " . strlen($texte) . ").";
         }
 
         if ($erreurs !== []) {
