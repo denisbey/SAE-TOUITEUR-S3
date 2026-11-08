@@ -7,12 +7,12 @@ class InfluencersAction extends Action
     public function execute(): string
     {
         // Données temporaires pour tester l'affichage
-        // Déjà classées du plus suivi au moins suivi
+        // Classées par ordre croissant du nombre d'abonnés
         $utilisateurs = [
-            ['pseudo' => 'Alice', 'abonnes' => 25],
-            ['pseudo' => 'Lucas', 'abonnes' => 18],
+            ['pseudo' => 'Hugo', 'abonnes' => 7],
             ['pseudo' => 'Emma', 'abonnes' => 12],
-            ['pseudo' => 'Hugo', 'abonnes' => 7]
+            ['pseudo' => 'Lucas', 'abonnes' => 18],
+            ['pseudo' => 'Alice', 'abonnes' => 25]
         ];
 
         $html = '<h2>Utilisateurs les plus suivis</h2>';
