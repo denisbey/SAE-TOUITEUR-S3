@@ -9,5 +9,6 @@ use iutnc\touiteur\action\FollowUserAction;
 $dispatcher = new Dispatcher();
 
 $dispatcher->addRoute('default', DefaultAction::class);
+$dispatcher->addRoute('follow-user', FollowUserAction::class);
 
 $dispatcher->run();
