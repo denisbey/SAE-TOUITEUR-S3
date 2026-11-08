@@ -13,5 +13,6 @@ $dispatcher = new Dispatcher();
 
 $dispatcher->addRoute('default', DefaultAction::class);
 $dispatcher->addRoute('follow-user', FollowUserAction::class);
+$dispatcher->addRoute('follow-tag', FollowTagAction::class);
 
 $dispatcher->run();
