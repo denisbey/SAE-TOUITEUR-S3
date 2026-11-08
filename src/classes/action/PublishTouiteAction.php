@@ -2,6 +2,8 @@
 
 namespace iutnc\touiteur\action;
 
+use iutnc\touiteur\model\Touite;
+
 class PublishTouiteAction extends Action
 {
     private const LONGUEUR_MAX = 235;
@@ -30,7 +32,28 @@ class PublishTouiteAction extends Action
             return $this->formulaire($pseudo, $texte, $erreurs);
         }
 
-        return $this->confirmation($this->nettoyer($pseudo), $this->nettoyer($texte));
+        $tags = $this->extraireTags($texte);
+        $touite = new Touite($this->nettoyer($pseudo), $this->nettoyer($texte), $tags);
+
+        return $this->confirmation($touite);
+    }
+
+    // Cherche les mots qui commencent par # et renvoie la liste des tags (sans le #)
+    private function extraireTags(string $texte): array
+    {
+        $mots = explode(' ', str_replace(["\r", "\n"], ' ', $texte));
+        $tags = [];
+
+        foreach ($mots as $mot) {
+            if (strlen($mot) > 1 && $mot[0] === '#') {
+                $tag = $this->nettoyer(trim(substr($mot, 1), '.,;:!?'));
+                if ($tag !== '' && !in_array($tag, $tags)) {
+                    $tags[] = $tag;
+                }
+            }
+        }
+
+        return $tags;
     }
 
     // Lit un champ envoyé en POST : renvoie '' s'il est absent ou invalide (ex. un tableau)
@@ -48,14 +71,24 @@ class PublishTouiteAction extends Action
         return filter_var($valeur, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-    private function confirmation(string $pseudo, string $texte): string
+    // Les valeurs de l'objet Touite sont déjà nettoyées
+    private function confirmation(Touite $touite): string
     {
         $adresse = $this->nettoyer($this->script_name) . '?action=publish';
 
+        $tags = '';
+        foreach ($touite->tags as $tag) {
+            $tags .= '#' . $tag . ' ';
+        }
+        if ($tags === '') {
+            $tags = 'aucun';
+        }
+
         return <<<HTML
         <h2>Touite validé</h2>
-        <p><strong>$pseudo</strong></p>
-        <p>$texte</p>
+        <p><strong>{$touite->pseudo}</strong> - {$touite->date}</p>
+        <p>{$touite->texte}</p>
+        <p>Hashtags détectés : $tags</p>
         <p><a href="$adresse">Publier un autre touite</a></p>
         HTML;
     }
