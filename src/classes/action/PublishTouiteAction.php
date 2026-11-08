@@ -48,7 +48,6 @@ class PublishTouiteAction extends Action
         return filter_var($valeur, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-    // Les valeurs reçues ici sont déjà nettoyées
     private function confirmation(string $pseudo, string $texte): string
     {
         $adresse = $this->nettoyer($this->script_name) . '?action=publish';
