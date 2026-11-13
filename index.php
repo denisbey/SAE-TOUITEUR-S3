@@ -10,6 +10,7 @@ use iutnc\touiteur\action\FollowUserAction;
 use iutnc\touiteur\action\FollowTagAction;
 use iutnc\touiteur\action\WallAction;
 use iutnc\touiteur\dispatch\Dispatcher;
+use iutnc\touiteur\action\InfluencersAction;
 
 $dispatcher = new Dispatcher();
 
@@ -18,5 +19,8 @@ $dispatcher->addRoute('publish', PublishTouiteAction::class);
 $dispatcher->addRoute('follow-user', FollowUserAction::class);
 $dispatcher->addRoute('follow-tag', FollowTagAction::class);
 $dispatcher->addRoute('wall', WallAction::class);
+
+$dispatcher->addRoute('statistiques', InfluencersAction::class);
+
 
 $dispatcher->run();
