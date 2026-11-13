@@ -307,8 +307,10 @@ class TouiteRepository
     private function versTouite(array $ligne): Touite
     {
         $image = $ligne['image'] === null ? '' : $ligne['image'];
-        return new Touite($ligne['texte'], $ligne['pseudo'], $ligne['date_pub'],
+        $t = new Touite($ligne['texte'], $ligne['pseudo'], $ligne['date_pub'],
             $this->tagsDuTouite((int) $ligne['id']), $image);
+        $t->setId($ligne['id']);
+        return $t;
     }
 
     private function tagsDuTouite(int $idTouite): array

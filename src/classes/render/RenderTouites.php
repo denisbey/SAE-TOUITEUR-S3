@@ -21,7 +21,7 @@ class RenderTouites implements Renderer {
             foreach($lt->tags as $t) {
                 $r = $r . "<a href='?action=display-touites-tag&tag=$t->text'> $t->text </a>";
             }
-            $r = $r . "</div><a href='?action=display-touite&id='> voir detail touite </a><br><br>";
+            $r = $r . "</div><a href='?action=display-touite&id=$lt->id'> voir detail touite </a><br><br>";
         }
         return $r;
     }
