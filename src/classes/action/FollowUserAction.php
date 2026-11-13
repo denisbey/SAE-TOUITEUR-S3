@@ -2,6 +2,10 @@
 
 namespace iutnc\touiteur\action;
 
+use iutnc\touiteur\repository\TouiteRepository;
+use iutnc\touiteur\exception\DataNotFoundException;
+use iutnc\touiteur\exception\DatabaseConnectionException;
+
 class FollowUserAction extends Action
 {
     public function execute(): string
@@ -33,13 +37,16 @@ class FollowUserAction extends Action
                 return "<p>Vous ne pouvez pas vous suivre vous-même.</p>";
             }
 
-            if (!isset($_SESSION['follow_users'])) {
-                $_SESSION['follow_users'] = [];
+            try {
+                $repository = TouiteRepository::getInstance();
+                $repository->suivreUtilisateur($userId, $followedId);
+
+                return "<p>Vous suivez maintenant cet utilisateur.</p>";
+            } catch (DataNotFoundException $e) {
+                return "<p>Utilisateur introuvable.</p>";
+            } catch (DatabaseConnectionException | \PDOException $e) {
+                return "<p>Erreur lors de l'enregistrement de l'abonnement.</p>";
             }
-
-            $_SESSION['follow_users'][$userId][$followedId] = true;
-
-            return "<p>Utilisateur suivi avec succès !</p>";
         }
 
         return "<p>Méthode non autorisée.</p>";
