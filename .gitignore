@@ -1,3 +1,4 @@
 /vendor/
 /*.ini
 /.env
+config.db.ini

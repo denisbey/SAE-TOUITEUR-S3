@@ -2,15 +2,14 @@
 
 namespace iutnc\touiteur\action;
 
-use iutnc\touiteur\repository\TouiteurRepository;
+use iutnc\touiteur\repository\TouiteRepository;
 
 class InfluencersAction extends Action
 {
     public function execute(): string
     {
-        // Récupération des utilisateurs depuis la base de données
-        $repository = TouiteurRepository::getInstance();
-        $utilisateurs = $repository->findInfluencers();
+        $repository = TouiteRepository::getInstance();
+        $utilisateurs = $repository->influenceurs();
 
         $html = '<h2>Utilisateurs les plus suivis</h2>';
 
@@ -24,8 +23,7 @@ class InfluencersAction extends Action
         $position = 1;
 
         foreach ($utilisateurs as $utilisateur) {
-            // Protection de l'affichage contre les injections HTML
-            $nom = htmlspecialchars(
+            $pseudo = htmlspecialchars(
                 $utilisateur['pseudo'],
                 ENT_QUOTES,
                 'UTF-8'
@@ -35,7 +33,7 @@ class InfluencersAction extends Action
 
             $html .= '<tr>';
             $html .= '<td>' . $position . '</td>';
-            $html .= '<td>' . $nom . '</td>';
+            $html .= '<td>' . $pseudo . '</td>';
             $html .= '<td>' . $abonnes . '</td>';
             $html .= '</tr>';
 
