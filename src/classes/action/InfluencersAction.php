@@ -26,7 +26,7 @@ class InfluencersAction extends Action
         foreach ($utilisateurs as $utilisateur) {
             // Protection de l'affichage contre les injections HTML
             $nom = htmlspecialchars(
-                $utilisateur['prenom'] . ' ' . $utilisateur['nom'],
+                $utilisateur['pseudo'],
                 ENT_QUOTES,
                 'UTF-8'
             );

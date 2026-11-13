@@ -50,18 +50,21 @@ class TouiteurRepository
         return self::$instance;
     }
 
+    
     public function findInfluencers(): array
     {
-        $sql = "SELECT u.id, u.nom, u.prenom,
-                       COUNT(s.userId) AS abonnes
-                FROM utilisateur u
-                LEFT JOIN subscribe s ON s.subId = u.id
-                GROUP BY u.id, u.nom, u.prenom
-                ORDER BY abonnes ASC, u.nom ASC";
+    $sql = "SELECT u.pseudo,
+                   COUNT(s.id_suiveur) AS abonnes
+            FROM utilisateur u
+            LEFT JOIN suit_utilisateur s
+                ON s.id_suivi = u.id
+            GROUP BY u.id, u.pseudo
+            ORDER BY abonnes ASC, u.pseudo ASC";
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute();
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
 }
