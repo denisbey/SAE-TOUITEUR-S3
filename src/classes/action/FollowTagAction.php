@@ -2,6 +2,10 @@
 
 namespace iutnc\touiteur\action;
 
+use iutnc\touiteur\repository\TouiteRepository;
+use iutnc\touiteur\exception\DataNotFoundException;
+use iutnc\touiteur\exception\DatabaseConnectionException;
+
 class FollowTagAction extends Action
 {
     public function execute(): string
@@ -15,7 +19,7 @@ class FollowTagAction extends Action
                 <input type="number" name="user_id" min="1" required>
 
                 <label>Hashtag :</label>
-                <input type="text" name="tag" required>
+                <input type="text" name="tag" maxlength="100" required>
 
                 <button type="submit">S'abonner</button>
             </form>
@@ -32,22 +36,20 @@ class FollowTagAction extends Action
             $tag = trim($_POST['tag'] ?? '');
             $tag = ltrim($tag, '#');
 
-            if (!$userId || $userId < 1 || $tag === '') {
+            if (!$userId || $userId < 1 || $tag === '' || strlen($tag) > 100) {
                 return "<p>Données invalides.</p>";
             }
 
-            $tag = filter_var(
-                $tag,
-                FILTER_SANITIZE_SPECIAL_CHARS
-            );
+            try {
+                $repository = TouiteRepository::getInstance();
+                $repository->suivreTag($userId, $tag);
 
-            if (!isset($_SESSION['follow_tags'])) {
-                $_SESSION['follow_tags'] = [];
+                return "<p>Abonnement au hashtag enregistré !</p>";
+            } catch (DataNotFoundException $e) {
+                return "<p>Utilisateur introuvable.</p>";
+            } catch (DatabaseConnectionException | \PDOException $e) {
+                return "<p>Erreur lors de l'abonnement.</p>";
             }
-
-            $_SESSION['follow_tags'][$userId][$tag] = true;
-
-            return "<p>Abonnement au hashtag enregistré !</p>";
         }
 
         return "<p>Méthode non autorisée.</p>";
