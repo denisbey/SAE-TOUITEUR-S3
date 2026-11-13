@@ -2,3 +2,5 @@
 /*.ini
 /.env
 config.db.ini
+/uploads/*
+!/uploads/.gitkeep
