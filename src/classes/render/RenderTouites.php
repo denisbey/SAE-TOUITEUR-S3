@@ -15,13 +15,13 @@ class RenderTouites implements Renderer {
     public function renderCompact(ListeTouites $listeTouite) : string {
         $r = " ";
         foreach($listeTouite->touites as $lt) {
-            $r = $r . "<a href='?action=display-touites&id=1'> $lt->auteur </a>
+            $r = $r . "<a href='?action=display-touites-auteur&pseudo=$lt->auteur'> $lt->auteur </a>
             <div name='date'> $lt->date </div>
             <div name='tags'> Tags: ";
             foreach($lt->tags as $t) {
-                $r = $r . "$t->text ";
+                $r = $r . "<a href='?action=display-touites-tag&tag=$t->text'> $t->text </a>";
             }
-            $r = $r . "</div><br>";
+            $r = $r . "</div><a href='?action=display-touite&id='> voir detail touite </a><br><br>";
         }
         return $r;
     }
