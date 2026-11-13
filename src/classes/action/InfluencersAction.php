@@ -2,18 +2,15 @@
 
 namespace iutnc\touiteur\action;
 
+use iutnc\touiteur\repository\TouiteurRepository;
+
 class InfluencersAction extends Action
 {
     public function execute(): string
     {
-        // Données temporaires pour tester l'affichage
-        // Classées par ordre croissant du nombre d'abonnés
-        $utilisateurs = [
-            ['pseudo' => 'Hugo', 'abonnes' => 7],
-            ['pseudo' => 'Emma', 'abonnes' => 12],
-            ['pseudo' => 'Lucas', 'abonnes' => 18],
-            ['pseudo' => 'Alice', 'abonnes' => 25]
-        ];
+        // Récupération des utilisateurs depuis la base de données
+        $repository = TouiteurRepository::getInstance();
+        $utilisateurs = $repository->findInfluencers();
 
         $html = '<h2>Utilisateurs les plus suivis</h2>';
 
@@ -27,8 +24,9 @@ class InfluencersAction extends Action
         $position = 1;
 
         foreach ($utilisateurs as $utilisateur) {
-            $pseudo = htmlspecialchars(
-                $utilisateur['pseudo'],
+            // Protection de l'affichage contre les injections HTML
+            $nom = htmlspecialchars(
+                $utilisateur['prenom'] . ' ' . $utilisateur['nom'],
                 ENT_QUOTES,
                 'UTF-8'
             );
@@ -37,7 +35,7 @@ class InfluencersAction extends Action
 
             $html .= '<tr>';
             $html .= '<td>' . $position . '</td>';
-            $html .= '<td>' . $pseudo . '</td>';
+            $html .= '<td>' . $nom . '</td>';
             $html .= '<td>' . $abonnes . '</td>';
             $html .= '</tr>';
 
