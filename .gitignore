@@ -1,3 +1,5 @@
 /vendor/
 /*.ini
 /.env
+/uploads/*
+!/uploads/.gitkeep
