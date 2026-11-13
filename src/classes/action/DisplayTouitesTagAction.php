@@ -10,12 +10,11 @@ use iutnc\touiteur\touite\Tag;
 class DisplayTouitesTagAction extends Action {
 
     public function execute() : string {
-        // $_GET['action'] 
-        $tag1 = new Tag("test");
-        $tag2 = new Tag("dev");
-        $touite1 = new Touite("Test touite", "Me", "04/11/2026", [$tag1, $tag2]);
-        $touite2 = new Touite("Another test", "Me", "05/11/2026", [$tag1, $tag2]);
-        $r = new RenderTouites(new ListeTouites([$touite1, $touite2]));
+        $tag = $_GET['tag'];
+        if(is_null($tag)) { return "<p> tag manquant </p>"; }
+
+        $repo = \iutnc\touiteur\repository\TouiteRepository::getInstance();
+        $r = new RenderTouites($repo->touitesDuTag($tag));
         return $r->render(1);
     }
 
