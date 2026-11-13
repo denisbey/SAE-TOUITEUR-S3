@@ -2,6 +2,9 @@
 
 namespace iutnc\touiteur\action;
 
+use iutnc\touiteur\repository\TouiteRepository;
+use iutnc\touiteur\exception\DatabaseConnectionException;
+
 class WallAction extends Action
 {
     public function execute(): string
@@ -27,68 +30,44 @@ class WallAction extends Action
             HTML;
         }
 
-        $usersSuivis = $_SESSION['follow_users'][$userId] ?? [];
-        $tagsSuivis = $_SESSION['follow_tags'][$userId] ?? [];
+        try {
+            $repository = TouiteRepository::getInstance();
 
-        // Données temporaires en attendant la base de données
-        // Les touites sont classés du plus récent au plus ancien
-        $touites = [
-            [
-                'auteur_id' => 3,
-                'auteur' => 'Alice',
-                'texte' => 'Je découvre le PHP ! #informatique',
-                'tags' => ['informatique']
-            ],
-            [
-                'auteur_id' => 2,
-                'auteur' => 'Bob',
-                'texte' => 'Bonjour tout le monde ! #bonjour',
-                'tags' => ['bonjour']
-            ],
-            [
-                'auteur_id' => 4,
-                'auteur' => 'Lucas',
-                'texte' => 'Nouveau projet en PHP #informatique',
-                'tags' => ['informatique']
-            ]
-        ];
-
-        $html = "<h2>Mur de l'utilisateur $userId</h2>";
-        $nombreTouites = 0;
-
-        foreach ($touites as $touite) {
-            $afficher = isset($usersSuivis[$touite['auteur_id']]);
-
-            foreach ($touite['tags'] as $tag) {
-                if (isset($tagsSuivis[$tag])) {
-                    $afficher = true;
-                }
+            if (!$repository->utilisateurExiste($userId)) {
+                return "<p>Utilisateur introuvable.</p>";
             }
 
-            if ($afficher) {
-                $auteur = filter_var(
-                    $touite['auteur'],
-                    FILTER_SANITIZE_SPECIAL_CHARS
+            $liste = $repository->mur($userId);
+
+            $html = "<h2>Mur de l'utilisateur $userId</h2>";
+
+            if (count($liste->touites) === 0) {
+                return $html . "<p>Aucun touite à afficher.</p>";
+            }
+
+            foreach ($liste->touites as $touite) {
+                $auteur = htmlspecialchars(
+                    $touite->auteur,
+                    ENT_QUOTES,
+                    'UTF-8'
                 );
 
-                $texte = filter_var(
-                    $touite['texte'],
-                    FILTER_SANITIZE_SPECIAL_CHARS
+                $texte = htmlspecialchars(
+                    $touite->text,
+                    ENT_QUOTES,
+                    'UTF-8'
                 );
 
                 $html .= "<article>";
                 $html .= "<h3>$auteur</h3>";
                 $html .= "<p>$texte</p>";
                 $html .= "</article>";
-
-                $nombreTouites++;
             }
-        }
 
-        if ($nombreTouites === 0) {
-            $html .= "<p>Aucun touite à afficher.</p>";
-        }
+            return $html;
 
-        return $html;
+        } catch (DatabaseConnectionException | \PDOException $e) {
+            return "<p>Erreur lors du chargement du mur.</p>";
+        }
     }
 }
