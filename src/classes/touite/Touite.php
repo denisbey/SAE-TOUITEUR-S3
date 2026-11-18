@@ -4,6 +4,7 @@ namespace iutnc\touiteur\touite;
 
 class Touite {
 
+    private int $id;
     private string $text;
     private string $auteur;
     private string $date;
@@ -28,6 +29,11 @@ class Touite {
     public function __toString() : string
     {
         return json_encode(get_object_vars($this));
+    }
+
+    public function setId(int $id) : void 
+    {
+        $this->id = $id;
     }
 
     
