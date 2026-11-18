@@ -1,0 +1,90 @@
+
+/* Style général */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #333333;
+}
+
+/* En-tête du site */
+
+header {
+    background-color: #25364a;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    padding-bottom: 15px;
+}
+
+/* Navigation */
+
+nav {
+    padding: 10px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Contenu principal */
+
+main {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 25px;
+    background-color: white;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+}
+
+h2 {
+    color: #25364a;
+    margin-bottom: 20px;
+}
+
+/* Tableau des statistiques */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    background-color: #25364a;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #dddddd;
+}
+
+tr:hover td {
+    background-color: #eef2f6;
+}
+
+/* Liens dans le contenu */
+
+main a {
+    color: #245a91;
+}
+
+main a:hover {
+    text-decoration: none;
+}

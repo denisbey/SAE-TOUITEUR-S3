@@ -2,7 +2,11 @@
 
 namespace iutnc\touiteur\action;
 
-use iutnc\touiteur\model\Touite;
+use iutnc\touiteur\exception\DatabaseConnectionException;
+use iutnc\touiteur\exception\DataNotFoundException;
+use iutnc\touiteur\repository\TouiteRepository;
+use iutnc\touiteur\touite\Tag;
+use iutnc\touiteur\touite\Touite;
 
 class PublishTouiteAction extends Action
 {
@@ -29,6 +33,19 @@ class PublishTouiteAction extends Action
                 . " caractères (vous en avez " . strlen($texte) . ").";
         }
 
+        // Le pseudo doit être celui d'un utilisateur existant
+        $repository = null;
+        if ($pseudo !== '') {
+            try {
+                $repository = TouiteRepository::getInstance();
+                $repository->idUtilisateur($this->nettoyer($pseudo));
+            } catch (DataNotFoundException $e) {
+                $erreurs[] = "Ce pseudo n'existe pas.";
+            } catch (DatabaseConnectionException $e) {
+                $erreurs[] = "La base de données est indisponible, réessayez plus tard.";
+            }
+        }
+
         // Image facultative (F13) : on contrôle le type du fichier envoyé
         $extension = '';
         $aUneImage = isset($_FILES['image']) && $_FILES['image']['name'] !== '';
@@ -47,20 +64,24 @@ class PublishTouiteAction extends Action
         }
 
         // Le fichier n'est enregistré qu'une fois tout le reste validé
-        $image = null;
+        $image = '';
         if ($aUneImage) {
-            $image = uniqid() . '.' . $extension;
-            $destination = __DIR__ . '/../../../uploads/' . $image;
+            $nomFichier = uniqid() . '.' . $extension;
+            $destination = __DIR__ . '/../../../uploads/' . $nomFichier;
             if (!move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
                 return $this->formulaire($pseudo, $texte, ["Le téléchargement de l'image a échoué."]);
             }
+            $image = 'uploads/' . $nomFichier;
         }
 
-        $tags = $this->extraireTags($texte);
-        $touite = new Touite($this->nettoyer($pseudo), $this->nettoyer($texte), $tags, $image);
+        $tags = [];
+        foreach ($this->extraireTags($texte) as $libelle) {
+            $tags[] = new Tag($libelle);
+        }
+        $touite = new Touite($this->nettoyer($texte), $this->nettoyer($pseudo), date('Y-m-d H:i:s'), $tags, $image);
 
-        // Semaine prochaine : c'est ici qu'on enregistrera le touite et ses tags
-        // avec le Repository (pour l'instant, on affiche seulement le résultat).
+        // Enregistrement du touite et de ses tags dans la base
+        $repository->publier($touite);
 
         return $this->confirmation($touite);
     }
@@ -105,21 +126,21 @@ class PublishTouiteAction extends Action
 
         $tags = '';
         foreach ($touite->tags as $tag) {
-            $tags .= '#' . $tag . ' ';
+            $tags .= '#' . $tag->text . ' ';
         }
         if ($tags === '') {
             $tags = 'aucun';
         }
 
         $image = '';
-        if ($touite->image !== null) {
-            $image = '<p><img src="uploads/' . $touite->image . '" alt="Image du touite" width="300"></p>';
+        if ($touite->image !== '') {
+            $image = '<p><img src="' . $touite->image . '" alt="Image du touite" width="300"></p>';
         }
 
         return <<<HTML
-        <h2>Touite validé</h2>
-        <p><strong>{$touite->pseudo}</strong> - {$touite->date}</p>
-        <p>{$touite->texte}</p>
+        <h2>Touite publié</h2>
+        <p><strong>{$touite->auteur}</strong> - {$touite->date}</p>
+        <p>{$touite->text}</p>
         $image
         <p>Hashtags détectés : $tags</p>
         <p><a href="$adresse">Publier un autre touite</a></p>

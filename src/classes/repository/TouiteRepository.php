@@ -262,7 +262,7 @@ class TouiteRepository
     public function influenceurs(): array
     {
         $stmt = $this->pdo->prepare("SELECT u.pseudo, COUNT(s.id_suiveur) AS abonnes
-            FROM utilisateur u INNER JOIN suit_utilisateur s ON s.id_suivi = u.id
+            FROM utilisateur u LEFT JOIN suit_utilisateur s ON s.id_suivi = u.id
             GROUP BY u.id, u.pseudo ORDER BY abonnes ASC, u.pseudo");
         $stmt->execute();
         $resultat = [];
